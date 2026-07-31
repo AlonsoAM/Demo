@@ -1,0 +1,128 @@
+/* Tipografía del DESIGN.md (sección 3) — Nunito es el respaldo real (Feather Bold no está
+   licenciada); se carga 400/600/700/800 porque el texto de lectura corre en 700 y los
+   encabezados en 800. Debe ir ANTES de `@import "tailwindcss"`: una vez que Tailwind expande
+   sus propias reglas, un @import posterior ya no es válido en CSS (debe preceder a toda regla
+   salvo @charset/@layer). */
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap");
+
+@import "tailwindcss";
+
+/* Tailwind 4 usa el variant `dark` por prefers-color-scheme por defecto. El estándar del
+   equipo fija el tema por selección explícita del usuario (AF-19/A-9, ver useTemaStore), así
+   que `dark:` debe depender únicamente de la clase `.dark` en <html> (useAplicarTema, T4.3). */
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  --radius: 0.625rem;
+
+  /* Mapeo shadcn oficial del DESIGN.md — modo claro
+     (sección "Implementación por stack" → "Perfil React + TS + Tailwind + shadcn/ui").
+     Pegado tal cual (A-5): ningún hex fuera de estos tokens (A11). */
+  --background: #ffffff;            /* canvas */
+  --foreground: #3C3C3C;            /* ink */
+  --card: #F7F7F7;                  /* surface-1 */
+  --card-foreground: #3C3C3C;
+  --popover: #F7F7F7;
+  --popover-foreground: #3C3C3C;
+  --primary: #58CC02;
+  --primary-foreground: #131F24;    /* on-primary — tinta oscura, NO blanco */
+  --secondary: #1CB0F6;
+  --secondary-foreground: #131F24;
+  --muted: #EBEBEB;                 /* surface-2 */
+  --muted-foreground: #666666;      /* ink-muted */
+  --accent: #58CC02;
+  --accent-foreground: #131F24;
+  --destructive: #FF4B4B;           /* accent-red de la paleta, no un rojo ajeno */
+  --destructive-foreground: #131F24;
+  --border: #E5E5E5;                /* decorativo */
+  --input: #767676;                 /* border-strong — el input ES señal de estado */
+  --ring: #116D99;                  /* secondary-text — 5.4:1; el azul de marca daría 2.4:1 */
+}
+
+.dark {
+  /* Mapeo shadcn oficial del DESIGN.md — bloque `.dark` que shadcn ya espera en `globals.css`.
+     Pegado tal cual (A-5): ningún hex fuera de estos tokens (A11). */
+  --background: #131F24;            /* canvas */
+  --foreground: #F1F7FB;            /* ink */
+  --card: #202F36;                  /* surface-1 */
+  --card-foreground: #F1F7FB;
+  --popover: #202F36;
+  --popover-foreground: #F1F7FB;
+  --primary: #58CC02;
+  --primary-foreground: #131F24;    /* on-primary — tinta oscura, NO blanco */
+  --secondary: #1CB0F6;
+  --secondary-foreground: #131F24;
+  --muted: #2B3D45;                 /* surface-2 */
+  --muted-foreground: #A3B5BF;      /* ink-muted */
+  --accent: #58CC02;
+  --accent-foreground: #131F24;
+  --destructive: #FF4B4B;
+  --destructive-foreground: #131F24;
+  --border: #37464F;                /* decorativo */
+  --input: #8398A3;                 /* border-strong — el input ES señal de estado */
+  --ring: #1CB0F6;                  /* secondary — 6.9:1 sobre el lienzo oscuro */
+}
+
+/* Traducción mecánica al sistema de theming de Tailwind 4 (CSS-first, A-5) — expone los
+   tokens de arriba como utilidades (`bg-background`, `text-foreground`, `rounded-md`, ...).
+   No introduce ningún color nuevo: solo referencia los tokens ya declarados. */
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Tipografía del DESIGN.md (sección 3) */
+  --font-sans: "Nunito", -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-display: "Feather Bold", "Nunito", -apple-system, sans-serif;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    font-size: 15px;
+    font-weight: 700; /* DESIGN.md §3 — texto de lectura en peso alto, sin pesos delgados */
+    line-height: 1.5;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    letter-spacing: -0.01em;
+  }
+
+  /* H7-E20 — indicador de foco visible por teclado en ambos temas: outline 2px, offset 2px,
+     color `--ring` (#116D99 en claro — 5.4:1 · #1CB0F6 en oscuro — 6.9:1). Nunca color único
+     canal de estado: el outline reemplaza al foco nativo del navegador, no lo remueve sin
+     sustituto. */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+}
