@@ -34,4 +34,15 @@ export default defineConfig([
       ],
     },
   },
+  {
+    // Archivos de test/helpers de test: nunca pasan por Vite Fast Refresh,
+    // así que exportar helpers no-componente (ej. `renderConProveedores` en
+    // `src/test/utils.tsx`) o hacer `export *` de una librería (ej.
+    // `@testing-library/react`) no rompe HMR. Se desactiva sólo acá — el
+    // resto de componentes de producción sigue exigiendo la regla.
+    files: ['src/test/**', '**/__tests__/**', '**/*.test.{ts,tsx}'],
+    rules: {
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

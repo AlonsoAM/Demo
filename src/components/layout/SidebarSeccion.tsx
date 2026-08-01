@@ -1,5 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
-import { NavLink } from 'react-router';
+import { Link } from 'react-router';
 
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
@@ -42,8 +42,14 @@ interface SidebarSeccionProps {
 /**
  * Un ítem del menú lateral: icono + nombre, con la marca de sección activa
  * (H1-E5, H2-E4) y el tooltip del nombre cuando el menú está colapsado
- * (H2-E3, AF-20). Es un `NavLink` de react-router: Enter lo activa sin
- * código adicional (H7-E15) y navega con el teclado igual que con el mouse.
+ * (H2-E3, AF-20). Es un `Link` plano de react-router (no `NavLink`): el
+ * matching de ruta propio de `NavLink` recalcularía "activa" comparando
+ * `to` contra la ruta actual, e ignoraría el prop `activa` que ya resuelve
+ * `Sidebar` — necesario porque "Comercial"/"Packing" no tienen pantalla
+ * propia (AF-21, su `ruta` apunta a la primera subsección) y la lógica de
+ * cuál sección contenedora se marca activa según colapso/subsección
+ * (H1-E5, H2-E4) es del padre, no de esta librería. Enter sigue activando
+ * el enlace sin código adicional (H7-E15): `Link` renderiza un `<a>` normal.
  *
  * La marca de "activa" nunca depende solo del color (RN-34, H7-E19): además
  * del tinte de fondo lleva una barra indicadora a la izquierda
@@ -53,7 +59,7 @@ export function SidebarSeccion({ seccion, colapsado, activa }: SidebarSeccionPro
   const Icono = seccion.icono;
 
   const enlace = (
-    <NavLink
+    <Link
       to={seccion.ruta}
       aria-current={activa ? 'page' : undefined}
       className={cn(
@@ -67,7 +73,7 @@ export function SidebarSeccion({ seccion, colapsado, activa }: SidebarSeccionPro
     >
       {Icono && <Icono aria-hidden="true" className="size-5 shrink-0" />}
       <span className={cn('truncate', colapsado && 'sr-only')}>{seccion.nombre}</span>
-    </NavLink>
+    </Link>
   );
 
   if (!colapsado) {
