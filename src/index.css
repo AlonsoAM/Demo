@@ -37,6 +37,7 @@
   --border: #E5E5E5;                /* decorativo */
   --input: #767676;                 /* border-strong — el input ES señal de estado */
   --ring: #116D99;                  /* secondary-text — 5.4:1; el azul de marca daría 2.4:1 */
+  --shadow-button: 0 4px 0 #58A700; /* sombra 3D del botón (T5.2) — mockup aprobado líneas 30-31 */
 }
 
 .dark {
@@ -61,6 +62,7 @@
   --border: #37464F;                /* decorativo */
   --input: #8398A3;                 /* border-strong — el input ES señal de estado */
   --ring: #1CB0F6;                  /* secondary — 6.9:1 sobre el lienzo oscuro */
+  --shadow-button: 0 4px 0 #3D8B00; /* sombra 3D del botón (T5.2) — mockup aprobado líneas 62-63 */
 }
 
 /* Traducción mecánica al sistema de theming de Tailwind 4 (CSS-first, A-5) — expone los
