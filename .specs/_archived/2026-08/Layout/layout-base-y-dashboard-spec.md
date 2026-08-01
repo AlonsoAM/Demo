@@ -23,6 +23,7 @@ doc_tecnica_url: "https://run.clickup.ai/9013304214/3fd59115-0cd9-4466-960e-183b
 docs_generated_at: "2026-08-01 17:47"
 pr_url: "https://github.com/AlonsoAM/Demo/pull/1"
 pr_status: merged
+archive_pr_url: "https://github.com/AlonsoAM/Demo/pull/2"
 ---
 
 # Layout Base y Dashboard
