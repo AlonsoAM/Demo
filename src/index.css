@@ -1,11 +1,43 @@
-/* Tipografía del DESIGN.md (sección 3) — Nunito es el respaldo real (Feather Bold no está
-   licenciada); se carga 400/600/700/800 porque el texto de lectura corre en 700 y los
-   encabezados en 800. Debe ir ANTES de `@import "tailwindcss"`: una vez que Tailwind expande
-   sus propias reglas, un @import posterior ya no es válido en CSS (debe preceder a toda regla
-   salvo @charset/@layer). */
-@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap");
-
 @import "tailwindcss";
+
+/* Tipografía del DESIGN.md (sección 3) — Nunito es el respaldo real (Feather Bold no está
+   licenciada); se autoaloja en vez de cargarse desde Google Fonts (T9.5/PRT-15, Peer Review
+   Bloque 9): la red corporativa puede bloquear CDNs externos (A13 del plan). El .woff2 es el
+   mismo archivo que sirve Google para el subset "latin" de Nunito v32 — es una fuente variable
+   (un solo archivo cubre todo el eje de peso), por eso los cuatro @font-face de abajo (400/600/
+   700/800, porque el texto de lectura corre en 700 y los encabezados en 800) apuntan al mismo
+   src: el navegador renderiza cada peso desde la misma fuente variable, igual que hacía el CDN. */
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("./assets/fonts/nunito-variable-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("./assets/fonts/nunito-variable-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("./assets/fonts/nunito-variable-latin.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("./assets/fonts/nunito-variable-latin.woff2") format("woff2");
+}
 
 /* Tailwind 4 usa el variant `dark` por prefers-color-scheme por defecto. El estándar del
    equipo fija el tema por selección explícita del usuario (AF-19/A-9, ver useTemaStore), así

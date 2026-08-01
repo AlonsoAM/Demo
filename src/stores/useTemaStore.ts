@@ -35,6 +35,7 @@ export const useTemaStore = create<UseTemaStore>()(
     }),
     {
       name: 'layout.tema',
+      version: 1,
     },
   ),
 );

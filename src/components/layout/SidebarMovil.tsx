@@ -23,9 +23,11 @@ import { SidebarSeccion } from './SidebarSeccion';
  *   dejaría "Clientes" y "Despachos" inalcanzables sin reabrir el menú.
  * - **Se cierra automáticamente al elegir cualquier sección o subsección**
  *   (RN-32): un solo `onClick` en el `<nav>` que delega el cierre hacia
- *   cualquier enlace interno, en vez de repetirlo ítem por ítem — el `<nav>`
- *   solo contiene enlaces de navegación, así que no hay riesgo de cerrar el
- *   panel por un clic que no sea "elegir una sección".
+ *   cualquier enlace interno, en vez de repetirlo ítem por ítem — pero solo
+ *   dispara cuando el `target` del clic es (o está dentro de) un `<a>`
+ *   (`target.closest('a')`), para no cerrar el panel ante un clic en
+ *   separadores, encabezados de grupo u otro relleno del `<nav>` que no sea
+ *   "elegir una sección" (hallazgo T9.2 del Peer Review).
  *
  * El cierre al tocar fuera del panel (H7-E6) y con la tecla Escape (H7-E18,
  * RN-33) los resuelve Radix de fábrica a través de `Sheet`/`SheetContent`
@@ -56,7 +58,14 @@ export function SidebarMovil() {
         <nav
           aria-label="Menú principal"
           className="flex flex-1 flex-col gap-1 overflow-y-auto overflow-x-hidden p-2"
-          onClick={() => setMenuMovilAbierto(false)}
+          onClick={(evento) => {
+            // Solo cerramos si el clic ocurrió sobre un enlace real (o dentro
+            // de uno): así separadores, encabezados de grupo u otro relleno
+            // del `<nav>` que no sea "elegir una sección" no cierran el panel.
+            if (evento.target instanceof HTMLElement && evento.target.closest('a')) {
+              setMenuMovilAbierto(false);
+            }
+          }}
         >
           {SECCIONES_MENU.map((seccion) => {
             const tieneSubsecciones = (seccion.subsecciones?.length ?? 0) > 0;

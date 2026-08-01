@@ -30,6 +30,13 @@ interface UiState {
  * topbar. **Sin `persist`** (A-3, RN-11): a diferencia del tema, este estado
  * no sobrevive a la recarga — el sidebar siempre vuelve expandido (H2-E5,
  * H2-E6).
+ *
+ * Nota (PRT-13, Peer Review 7.7 → T9.4): que `sidebarColapsado` y
+ * `menuMovilAbierto` no persistan entre sesiones **no es un bug, es diseño
+ * intencional**. H2-E6 exige explícitamente que el sidebar vuelva expandido
+ * al recargar la página, así que agregarles el middleware `persist` de
+ * Zustand rompería ese criterio de aceptación. No agregar `persist` a estos
+ * campos sin antes revisar H2-E6.
  */
 export const useUiStore = create<UiState>((set) => ({
   sidebarColapsado: false,

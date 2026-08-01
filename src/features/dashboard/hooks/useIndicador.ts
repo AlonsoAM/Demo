@@ -18,9 +18,12 @@ import type { IndicadorId, ModoRespuestaIndicador } from '../types/indicador.typ
  *
  * @param id Identificador estable del indicador (AF-2) — forma parte de la
  *   `queryKey` para aislar el cache por indicador (H4-E11, RN-21).
- * @param modo Modo de respuesta a simular; por defecto `'con-valor'`.
+ * @param modo Modo de respuesta a simular; por defecto `'con-valor'`. También
+ *   forma parte de la `queryKey`: cada combinación de `id`+`modo`+`latenciaMs`
+ *   tiene su propia entrada de cache, para que cambiar el modo simulado no
+ *   reutilice una respuesta cacheada de un modo distinto (hallazgo T9.3).
  * @param latenciaMs Latencia simulada en milisegundos; por defecto la de
- *   `obtenerIndicador`.
+ *   `obtenerIndicador`. También forma parte de la `queryKey` (ver `modo`).
  */
 export function useIndicador(
   id: IndicadorId,
@@ -28,7 +31,7 @@ export function useIndicador(
   latenciaMs?: number,
 ) {
   const query = useQuery({
-    queryKey: ['indicador', id] as const,
+    queryKey: ['indicador', id, modo, latenciaMs] as const,
     queryFn: () => obtenerIndicador(id, modo, latenciaMs),
     retry: false,
   });

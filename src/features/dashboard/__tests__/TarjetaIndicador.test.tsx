@@ -12,15 +12,22 @@
  * sigue siendo una macrotarea, así que el estado de carga (`isPending`) sigue
  * siendo observable de forma síncrona apenas montado el componente.
  */
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
 
 import { renderConProveedores } from '@/test/utils';
 import { textosIndicador } from '@/lib/textos';
 
 import { TarjetaIndicador } from '../components/TarjetaIndicador';
+import * as indicadoresApi from '../api/indicadores.api';
+import { indicadoresMock } from '../data/indicadores.mock';
 
 describe('TarjetaIndicador', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+
   it('H3-E2, H3-E3, H3-E4: "Órdenes del mes" muestra 128, su variación y la tendencia en alza', async () => {
     const { container } = renderConProveedores(
       <TarjetaIndicador indicadorId="ordenes-mes" nombre="Órdenes del mes" latenciaMs={0} />,
@@ -110,10 +117,29 @@ describe('TarjetaIndicador', () => {
   });
 
   it('H4-E9, H4-E10: "Reintentar" vuelve a la carga y, si la API se recuperó, reemplaza el error por el valor', async () => {
-    // Latencia > 0 acá a propósito: deja una ventana observable para
-    // capturar el estado de carga intermedio del reintento (H4-E9) antes de
-    // que la respuesta simulada se resuelva.
-    const { rerender } = renderConProveedores(
+    // Se mockea `obtenerIndicador` (no las props) para simular la
+    // recuperación de la API: la primera llamada (montaje) rechaza y la
+    // segunda (el reintento explícito) resuelve con éxito. `modo` y
+    // `latenciaMs` se mantienen fijos por instancia montada — igual que en
+    // uso real (`InicioPage` vía `GrillaIndicadores`) — porque desde T9.3
+    // ambos forman parte de la `queryKey`; cambiarlos por props entre
+    // renders dispararía un fetch automático (la query es `enabled` por
+    // defecto) y adelantaría el skeleton antes del clic, rompiendo RN-20.
+    // La segunda llamada (reintento) resuelve con una latencia artificial
+    // real (setTimeout), no inmediata: así el estado de carga (H4-E9) queda
+    // en una ventana observable por `waitFor` en vez de resolverse en el
+    // mismo microtask del clic.
+    const indicadorOrdenesMes = indicadoresMock.find((i) => i.id === 'ordenes-mes')!;
+    vi.spyOn(indicadoresApi, 'obtenerIndicador')
+      .mockRejectedValueOnce(new Error('No se pudo obtener el indicador "ordenes-mes"'))
+      .mockImplementationOnce(
+        () =>
+          new Promise((resolve) => {
+            setTimeout(() => resolve({ estado: 'con-valor', indicador: indicadorOrdenesMes }), 40);
+          }),
+      );
+
+    renderConProveedores(
       <TarjetaIndicador
         indicadorId="ordenes-mes"
         nombre="Órdenes del mes"
@@ -123,18 +149,6 @@ describe('TarjetaIndicador', () => {
     );
 
     expect(await screen.findByText(textosIndicador.error)).toBeInTheDocument();
-
-    // Simula que la API se recuperó antes del reintento: un cambio de props
-    // (no un mock de la librería) actualiza el `modo` que consumirá el
-    // `queryFn` real de `useIndicador` en el próximo `refetch()` (A-2).
-    rerender(
-      <TarjetaIndicador
-        indicadorId="ordenes-mes"
-        nombre="Órdenes del mes"
-        modo="con-valor"
-        latenciaMs={40}
-      />,
-    );
 
     // El estado de error persiste hasta el reintento explícito (RN-20).
     expect(screen.getByText(textosIndicador.error)).toBeInTheDocument();
