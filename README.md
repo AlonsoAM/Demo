@@ -1,75 +1,73 @@
-# React + TypeScript + Vite
+# Layout Base y Dashboard (Demo)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Andamiaje de layout y pantalla de Inicio del sistema, con datos de ejemplo.
+Implementa el menú lateral, la barra superior, la ruta de navegación, el
+panel de notificaciones, el menú de usuario, el tema claro/oscuro y las
+tarjetas de indicadores del Dashboard.
 
-Currently, two official plugins are available:
+> **Solo frontend.** Esta entrega no tiene backend: los indicadores y las
+> notificaciones son datos de ejemplo servidos por una API simulada en el
+> propio cliente (latencia falsa + modos de respuesta con valor, vacío o
+> falla). No hay inicio de sesión ni persistencia real más allá del tema
+> (`localStorage`).
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Stack
 
-## React Compiler
+- **React 19** + **TypeScript** (modo `strict`)
+- **Vite 7**
+- **Tailwind CSS 4** (config CSS-first con `@theme`) + **shadcn/ui**
+- **React Router 7**
+- **TanStack Query 5** (datos del servidor simulado)
+- **Zustand** (estado de cliente: UI del layout, tema)
+- **Vitest** + **Testing Library** (pruebas)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Requisitos
 
-## Expanding the ESLint configuration
+- **Node.js 20.19+ o 22.12+** (recomendado usar la versión LTS activa más
+  reciente; Vite 7 exige alguno de estos mínimos)
+- **npm** (viene con Node.js)
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Instalación
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Comandos disponibles
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+| Comando | Descripción |
+|---|---|
+| `npm run dev` | Levanta el servidor de desarrollo con recarga en caliente |
+| `npm run build` | Verifica tipos (`tsc -b`) y genera el build de producción en `dist/` |
+| `npm run lint` | Corre ESLint sobre el proyecto |
+| `npm run test` | Corre las pruebas con Vitest |
+| `npm run preview` | Sirve el build de producción localmente para previsualizar |
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Estructura del proyecto
 
 ```
+src/
+├── app/            # navegación (fuente única), rutas, proveedores
+├── components/
+│   ├── layout/     # shell reutilizable: Sidebar, Topbar, Breadcrumb, etc.
+│   ├── shared/      # componentes compartidos (p. ej. aviso "en construcción")
+│   └── ui/          # componentes base de shadcn/ui
+├── features/
+│   ├── dashboard/   # indicadores: tipos, datos de ejemplo, API simulada, hooks, componentes
+│   └── notificaciones/  # avisos de ejemplo del panel de notificaciones
+├── hooks/           # hooks de aplicación (p. ej. aplicar tema)
+├── stores/          # estado de cliente con Zustand (UI, tema)
+├── pages/           # pantallas enrutadas
+├── lib/             # utilidades y textos centralizados
+└── test/            # helpers y setup de pruebas
+```
+
+## Notas de diseño
+
+- Los tokens visuales (color, espaciado, tipografía) salen del `DESIGN.md`
+  oficial del proyecto y viven en `src/index.css` como variables `@theme` de
+  Tailwind 4 — no hay valores hex sueltos en los componentes.
+- El tema por defecto es claro; el usuario puede alternar a oscuro y la
+  preferencia persiste entre visitas.
+- No hay rutas protegidas en esta entrega (la integración con inicio de
+  sesión queda para una spec posterior).
